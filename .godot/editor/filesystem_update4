@@ -34,3 +34,6 @@ res://scripts/stages/Platform.gd
 res://scripts/stages/StageBase.gd
 res://scripts/upgrades/UpgradeData.gd
 res://scripts/ui/UpgradeScreen.gd
+res://scripts/modes/concrete/NoUpgradesMode.gd
+res://scripts/modes/concrete/SuddenDeathMode.gd
+res://scripts/ui/RulesEditor.gd
