@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/UpgradeData.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/upgrades/effects/HaymakerEffect.gd" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"haymaker"
+display_name = "Haymaker"
+description = "Your hits send foes flying."
+effect_script = ExtResource("2")

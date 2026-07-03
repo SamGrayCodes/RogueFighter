@@ -83,6 +83,17 @@ func _begin_match() -> void:
 func _enter_game() -> void:
 	get_tree().change_scene_to_file(GAME_WORLD_SCENE)
 
+## Host-only: move every peer (including the host) to the given scene.
+func change_scene_all(scene_path: String) -> void:
+	if not is_host():
+		return
+	_change_scene_remote.rpc(scene_path)
+	get_tree().change_scene_to_file(scene_path)
+
+@rpc("authority", "call_remote", "reliable")
+func _change_scene_remote(scene_path: String) -> void:
+	get_tree().change_scene_to_file(scene_path)
+
 func _set_transport(new_transport: NetworkTransport) -> void:
 	if transport and transport.is_inside_tree():
 		remove_child(transport)

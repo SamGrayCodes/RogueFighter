@@ -1,0 +1,16 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/characters/CharacterStats.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+character_id = &"tank"
+display_name = "Tank"
+max_hp = 140.0
+move_speed = 155.0
+jump_velocity = -500.0
+max_jumps = 1
+attack_power = 1.25
+weight = 1.6
+gravity_scale = 1.2
+knockback_bonus = 60.0

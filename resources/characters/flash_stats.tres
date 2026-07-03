@@ -1,0 +1,16 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/characters/CharacterStats.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+character_id = &"flash"
+display_name = "Flash"
+max_hp = 78.0
+move_speed = 275.0
+jump_velocity = -600.0
+max_jumps = 3
+attack_power = 0.82
+weight = 0.7
+gravity_scale = 0.95
+knockback_bonus = 0.0

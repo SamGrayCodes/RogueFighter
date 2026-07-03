@@ -1,0 +1,121 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/stages/StageBase.tscn" id="1"]
+[ext_resource type="Script" path="res://scripts/stages/Platform.gd" id="2"]
+
+[sub_resource type="RectangleShape2D" id="BlastShapeH"]
+size = Vector2(3000.0, 120.0)
+
+[sub_resource type="RectangleShape2D" id="BlastShapeV"]
+size = Vector2(120.0, 2600.0)
+
+[sub_resource type="RectangleShape2D" id="GroundShape"]
+size = Vector2(760.0, 40.0)
+
+[sub_resource type="RectangleShape2D" id="MidShape"]
+size = Vector2(220.0, 16.0)
+
+[sub_resource type="RectangleShape2D" id="TopShape"]
+size = Vector2(180.0, 16.0)
+
+[node name="Stage02" instance=ExtResource("1")]
+stage_id = &"stage_02"
+display_name = "Skyline"
+spawn_points = [NodePath("SpawnPoints/Spawn0"), NodePath("SpawnPoints/Spawn1"), NodePath("SpawnPoints/Spawn2"), NodePath("SpawnPoints/Spawn3")]
+camera_bounds = Rect2(-760.0, -640.0, 1520.0, 1200.0)
+
+[node name="Spawn0" parent="SpawnPoints"]
+position = Vector2(-260.0, 240.0)
+
+[node name="Spawn1" parent="SpawnPoints"]
+position = Vector2(260.0, 240.0)
+
+[node name="Spawn2" parent="SpawnPoints"]
+position = Vector2(-300.0, -60.0)
+
+[node name="Spawn3" parent="SpawnPoints"]
+position = Vector2(300.0, -60.0)
+
+[node name="BlastZoneBottom" parent="."]
+position = Vector2(0.0, 680.0)
+
+[node name="CollisionShape2D" parent="BlastZoneBottom"]
+shape = SubResource("BlastShapeH")
+
+[node name="BlastZoneTop" parent="."]
+position = Vector2(0.0, -820.0)
+
+[node name="CollisionShape2D" parent="BlastZoneTop"]
+shape = SubResource("BlastShapeH")
+
+[node name="BlastZoneLeft" parent="."]
+position = Vector2(-1080.0, 0.0)
+
+[node name="CollisionShape2D" parent="BlastZoneLeft"]
+shape = SubResource("BlastShapeV")
+
+[node name="BlastZoneRight" parent="."]
+position = Vector2(1080.0, 0.0)
+
+[node name="CollisionShape2D" parent="BlastZoneRight"]
+shape = SubResource("BlastShapeV")
+
+[node name="Background" type="Polygon2D" parent="."]
+z_index = -10
+color = Color(0.06, 0.08, 0.14, 1.0)
+polygon = PackedVector2Array(-1080, -820, 1080, -820, 1080, 700, -1080, 700)
+
+[node name="Ground" type="StaticBody2D" parent="."]
+script = ExtResource("2")
+position = Vector2(0.0, 320.0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
+shape = SubResource("GroundShape")
+
+[node name="Visual" type="Polygon2D" parent="Ground"]
+color = Color(0.2, 0.24, 0.32, 1.0)
+polygon = PackedVector2Array(-380, -20, 380, -20, 380, 20, -380, 20)
+
+[node name="PlatformLeft" type="StaticBody2D" parent="."]
+script = ExtResource("2")
+position = Vector2(-360.0, 100.0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlatformLeft"]
+shape = SubResource("MidShape")
+
+[node name="Visual" type="Polygon2D" parent="PlatformLeft"]
+color = Color(0.26, 0.3, 0.4, 1.0)
+polygon = PackedVector2Array(-110, -8, 110, -8, 110, 8, -110, 8)
+
+[node name="PlatformRight" type="StaticBody2D" parent="."]
+script = ExtResource("2")
+position = Vector2(360.0, 100.0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlatformRight"]
+shape = SubResource("MidShape")
+
+[node name="Visual" type="Polygon2D" parent="PlatformRight"]
+color = Color(0.26, 0.3, 0.4, 1.0)
+polygon = PackedVector2Array(-110, -8, 110, -8, 110, 8, -110, 8)
+
+[node name="PlatformTopLeft" type="StaticBody2D" parent="."]
+script = ExtResource("2")
+position = Vector2(-180.0, -180.0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlatformTopLeft"]
+shape = SubResource("TopShape")
+
+[node name="Visual" type="Polygon2D" parent="PlatformTopLeft"]
+color = Color(0.3, 0.34, 0.46, 1.0)
+polygon = PackedVector2Array(-90, -8, 90, -8, 90, 8, -90, 8)
+
+[node name="PlatformTopRight" type="StaticBody2D" parent="."]
+script = ExtResource("2")
+position = Vector2(180.0, -180.0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlatformTopRight"]
+shape = SubResource("TopShape")
+
+[node name="Visual" type="Polygon2D" parent="PlatformTopRight"]
+color = Color(0.3, 0.34, 0.46, 1.0)
+polygon = PackedVector2Array(-90, -8, 90, -8, 90, 8, -90, 8)
