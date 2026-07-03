@@ -33,3 +33,4 @@ res://scripts/network/NetworkTransport.gd
 res://scripts/stages/Platform.gd
 res://scripts/stages/StageBase.gd
 res://scripts/upgrades/UpgradeData.gd
+res://scripts/ui/UpgradeScreen.gd
