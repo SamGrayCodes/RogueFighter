@@ -26,6 +26,12 @@ var _action_jump: StringName
 var _action_attack: StringName
 
 const GRAVITY: float = 980.0
+const _PLAYER_COLORS: Array[Color] = [
+	Color(0.2, 0.4, 1.0),
+	Color(1.0, 0.2, 0.2),
+	Color(1.0, 0.55, 0.1),
+	Color(0.65, 0.1, 1.0),
+]
 
 func _ready() -> void:
 	stats = stats.duplicate() as CharacterStats
@@ -39,6 +45,8 @@ func _ready() -> void:
 	hurtbox.hit_received.connect(_on_hit_received)
 	_setup_state_machine()
 	state_machine.start(&"Idle")
+	var indicator: Polygon2D = $PlayerIndicator as Polygon2D
+	indicator.color = _PLAYER_COLORS[clampi(player_index, 0, _PLAYER_COLORS.size() - 1)]
 
 func _cache_input_actions() -> void:
 	var p: int = player_index + 1
