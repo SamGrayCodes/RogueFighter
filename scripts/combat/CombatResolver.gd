@@ -9,7 +9,7 @@ func resolve_hit(target: CharacterBase, attack_data: AttackData, attacker: Chara
 		return
 
 	var rage_bonus: float = 1.0 + (1.0 - (target.current_hp / target.stats.max_hp)) * RAGE_SCALE
-	var scaled_damage: float = attack_data.damage * attacker.stats.attack_power
+	var scaled_damage: float = attack_data.damage * attacker.stats.attack_power * GameState.active_rules.damage_scaling
 	target.current_hp -= scaled_damage
 	target.current_hp = maxf(target.current_hp, 0.0)
 

@@ -3,8 +3,6 @@ extends CanvasLayer
 
 signal selections_complete
 
-const OFFERS_PER_PLAYER: int = 3
-
 var _characters: Array[CharacterBase] = []
 var _selections_remaining: int = 0
 var _player_locked: Array[bool] = []
@@ -57,7 +55,10 @@ func _build_ui() -> void:
 		var applied_ids: Array[StringName] = []
 		for ud: UpgradeData in _characters[i].upgrade_manager.applied_upgrades:
 			applied_ids.append(ud.id)
-		var offers: Array[UpgradeData] = UpgradeRegistry.get_random_offers(OFFERS_PER_PLAYER, applied_ids)
+		var combined_exclude: Array[StringName] = applied_ids + GameState.active_rules.blacklisted_upgrades
+		var offers: Array[UpgradeData] = UpgradeRegistry.get_random_offers(
+			GameState.active_rules.upgrade_offers_per_round, combined_exclude
+		)
 		row.add_child(_build_player_panel(i, _characters[i], offers))
 
 func _build_player_panel(slot: int, character: CharacterBase, offers: Array[UpgradeData]) -> PanelContainer:

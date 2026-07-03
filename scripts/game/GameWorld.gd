@@ -1,34 +1,29 @@
 class_name GameWorld
 extends Node2D
 
-@export var round_count: int = 3
-
 var _active_characters: Array[CharacterBase] = []
 var _all_characters: Array[CharacterBase] = []
 var _current_stage: StageBase
 var _round_timer: float = 0.0
-var _round_time_limit: float = 90.0
 var _is_round_active: bool = false
 var _active_mode: GameMode
 
 @onready var _camera: Camera2D = $Camera2D
 @onready var _hud: CanvasLayer = $HUD
 @onready var _upgrade_screen: UpgradeScreen = $UpgradeScreen
+@onready var _rules_editor: RulesEditor = $RulesEditor
 
 func _ready() -> void:
 	_current_stage = _find_stage()
 	_collect_characters()
-	_active_mode = StandardMode.new()
-	GameState.phase_changed.connect(_on_phase_changed)
-	GameState.set_phase(GameState.MatchPhase.ROUND_ACTIVE)
-	_reset_characters()
-	_start_round()
+	_rules_editor.rules_applied.connect(_on_rules_applied, CONNECT_ONE_SHOT)
+	_rules_editor.show()
 
 func _physics_process(delta: float) -> void:
 	if not _is_round_active:
 		return
 	_round_timer -= delta
-	if _round_timer <= 0.0 and _round_time_limit > 0.0:
+	if _round_timer <= 0.0 and GameState.active_rules.round_time_limit > 0.0:
 		_end_round()
 		return
 	_update_camera()
@@ -53,7 +48,7 @@ func _reset_characters() -> void:
 	_active_characters.clear()
 	for i: int in _all_characters.size():
 		var character: CharacterBase = _all_characters[i]
-		character.current_hp = character.stats.max_hp
+		character.current_hp = _active_mode.get_starting_hp(GameState.active_rules.starting_hp)
 		character.velocity = Vector2.ZERO
 		character.jumps_remaining = character.stats.max_jumps
 		character.state_machine.transition_to(&"Idle")
@@ -64,7 +59,7 @@ func _reset_characters() -> void:
 
 func _start_round() -> void:
 	GameState.current_round += 1
-	_round_timer = _round_time_limit
+	_round_timer = GameState.active_rules.round_time_limit
 	_is_round_active = true
 	_active_mode.on_round_start()
 	GameState.round_started.emit(GameState.current_round)
@@ -76,7 +71,7 @@ func _end_round() -> void:
 		GameState.record_round_win(winner)
 	_active_mode.on_round_end()
 	GameState.round_ended.emit(winner)
-	var rounds_to_win: int = ceili(round_count / 2.0) + 1
+	var rounds_to_win: int = ceili(GameState.active_rules.round_count / 2.0) + 1
 	var match_winner: int = _active_mode.get_match_winner(rounds_to_win)
 	if match_winner >= 0:
 		_finish_match(match_winner)
@@ -89,6 +84,13 @@ func _end_round() -> void:
 func _finish_match(winner_index: int) -> void:
 	GameState.set_phase(GameState.MatchPhase.RESULTS)
 	GameState.match_ended.emit(winner_index)
+
+func _on_rules_applied() -> void:
+	_active_mode = GameState.active_mode
+	GameState.phase_changed.connect(_on_phase_changed)
+	GameState.set_phase(GameState.MatchPhase.ROUND_ACTIVE)
+	_reset_characters()
+	_start_round()
 
 func _on_phase_changed(new_phase: GameState.MatchPhase) -> void:
 	if new_phase == GameState.MatchPhase.UPGRADE_PHASE:

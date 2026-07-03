@@ -22,5 +22,8 @@ func on_round_end() -> void:
 func get_match_winner(_rounds_to_win: int) -> int:
 	return -1
 
+func get_starting_hp(base_hp: float) -> float:
+	return base_hp
+
 func should_offer_upgrades() -> bool:
 	return true

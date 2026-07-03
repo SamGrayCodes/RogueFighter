@@ -24,11 +24,24 @@ class PlayerData:
 var phase: MatchPhase = MatchPhase.LOBBY
 var players: Array[PlayerData] = []
 var current_round: int = 0
+var active_rules: GameRules
+var active_mode: GameMode
 var combat_resolver: CombatResolver
 
 func _ready() -> void:
+	active_rules = GameRules.new()
+	active_mode = StandardMode.new()
 	combat_resolver = CombatResolver.new()
 	add_child(combat_resolver)
+
+func get_mode_for_id(id: StringName) -> GameMode:
+	match id:
+		&"no_upgrades":
+			return NoUpgradesMode.new()
+		&"sudden_death":
+			return SuddenDeathMode.new()
+		_:
+			return StandardMode.new()
 
 func set_phase(new_phase: MatchPhase) -> void:
 	phase = new_phase
