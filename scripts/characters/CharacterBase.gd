@@ -8,7 +8,13 @@ signal hp_changed(new_hp: float, max_hp: float)
 @export var ground_attack: AttackData
 @export var air_attack: AttackData
 
+## Player slot (0-based). Drives spawn ordering, indicator color, and — for
+## local (non-networked) play — which p#_ input action set controls this body.
 var player_index: int = 0
+## Peer id that provides input for this character. Defaults to the server (1),
+## which covers local play. Set per-peer when spawned over the network.
+var input_authority: int = 1
+
 var current_hp: float = 0.0
 var jumps_remaining: int = 0
 var state_machine: CharacterStateMachine
@@ -17,9 +23,24 @@ var hurtbox: HurtboxComponent
 var animation_player: AnimationPlayer
 var upgrade_manager: UpgradeManager
 
+## Current-state key mirrored for MultiplayerSynchronizer. Written by the
+## simulating peer each frame; on remote peers the setter drives visuals.
+var synced_state: StringName = &"Idle":
+	set(value):
+		synced_state = value
+		if not _is_sim_authority():
+			_apply_remote_state(value)
+
 var _facing: float = 1.0
-var _jump_pressed: bool = false
-var _attack_pressed: bool = false
+## Held-input the simulating peer reads this frame; the previous frame's copy is
+## used to derive just-pressed edges.
+var _input: InputData = InputData.new()
+var _prev_input: InputData = InputData.new()
+## Scratch buffer used by the input owner to sample local controls.
+var _local_input: InputData = InputData.new()
+var _jump_just_pressed: bool = false
+var _attack_just_pressed: bool = false
+
 var _action_left: StringName
 var _action_right: StringName
 var _action_jump: StringName
@@ -49,7 +70,12 @@ func _ready() -> void:
 	indicator.color = _PLAYER_COLORS[clampi(player_index, 0, _PLAYER_COLORS.size() - 1)]
 
 func _cache_input_actions() -> void:
-	var p: int = player_index + 1
+	# Local play maps each player to its own p#_ action set. In networked play
+	# every peer drives its own character from the shared p1_ controls.
+	var idx: int = player_index
+	if multiplayer.has_multiplayer_peer():
+		idx = 0
+	var p: int = idx + 1
 	_action_left   = "p%d_left"   % p
 	_action_right  = "p%d_right"  % p
 	_action_jump   = "p%d_jump"   % p
@@ -73,23 +99,64 @@ func _setup_state_machine() -> void:
 		state.machine = state_machine
 		state_machine.register(key, state)
 
-func _unhandled_input(event: InputEvent) -> void:
-	_jump_pressed = event.is_action_pressed(_action_jump)
-	_attack_pressed = event.is_action_pressed(_action_attack)
-	state_machine.handle_input(event)
-
 func _physics_process(delta: float) -> void:
+	if _is_input_owner():
+		_sample_local_input()
+		if _is_sim_authority():
+			_input.copy_from(_local_input)
+		else:
+			# Client: hand the held state to the authoritative server.
+			_receive_input.rpc_id(1, _local_input.move_axis, _local_input.jump_held, _local_input.attack_held)
+
+	if not _is_sim_authority():
+		# Remote peers only display state pushed by the synchronizer.
+		return
+
+	_jump_just_pressed = _input.jump_held and not _prev_input.jump_held
+	_attack_just_pressed = _input.attack_held and not _prev_input.attack_held
+
 	if not is_on_floor():
 		velocity.y += GRAVITY * stats.gravity_scale * delta
 	state_machine.physics_update(delta)
 	move_and_slide()
-	_jump_pressed = false
-	_attack_pressed = false
+
+	_prev_input.copy_from(_input)
 	if _facing != 0.0:
 		scale.x = _facing
+	synced_state = state_machine.current_state_name
+
+func _sample_local_input() -> void:
+	_local_input.move_axis = Input.get_axis(_action_left, _action_right)
+	_local_input.jump_held = Input.is_action_pressed(_action_jump)
+	_local_input.attack_held = Input.is_action_pressed(_action_attack)
+
+## Runs on the server. Clients push their held input here each frame.
+@rpc("any_peer", "call_remote", "unreliable_ordered")
+func _receive_input(move_axis: float, jump_held: bool, attack_held: bool) -> void:
+	if multiplayer.get_remote_sender_id() != input_authority:
+		return
+	_input.move_axis = move_axis
+	_input.jump_held = jump_held
+	_input.attack_held = attack_held
+
+func _is_sim_authority() -> bool:
+	return not multiplayer.has_multiplayer_peer() or multiplayer.is_server()
+
+func _is_input_owner() -> bool:
+	if not multiplayer.has_multiplayer_peer():
+		return true
+	return multiplayer.get_unique_id() == input_authority
+
+## On remote peers, follow the authoritative state so animations track the sim.
+func _apply_remote_state(state_name: StringName) -> void:
+	if state_machine == null:
+		return
+	if state_machine.current_state_name == state_name:
+		return
+	state_machine.transition_to(state_name)
 
 func get_move_input() -> float:
-	var dir: float = Input.get_axis(_action_left, _action_right)
+	var dir: float = _input.move_axis
 	if dir != 0.0:
 		_facing = sign(dir)
 	return dir
@@ -98,10 +165,10 @@ func apply_horizontal_move(dir: float) -> void:
 	velocity.x = dir * stats.move_speed
 
 func is_jump_just_pressed() -> bool:
-	return _jump_pressed
+	return _jump_just_pressed
 
 func is_attack_just_pressed() -> bool:
-	return _attack_pressed
+	return _attack_just_pressed
 
 func get_current_attack_data() -> AttackData:
 	if is_on_floor():

@@ -2,6 +2,7 @@ class_name CharacterStateMachine
 extends RefCounted
 
 var current_state: CharacterState
+var current_state_name: StringName = &""
 var _states: Dictionary = {}
 
 func register(state_name: StringName, state: CharacterState) -> void:
@@ -9,6 +10,7 @@ func register(state_name: StringName, state: CharacterState) -> void:
 
 func start(initial_state: StringName) -> void:
 	current_state = _states[initial_state]
+	current_state_name = initial_state
 	current_state.enter()
 
 func transition_to(state_name: StringName) -> void:
@@ -17,6 +19,7 @@ func transition_to(state_name: StringName) -> void:
 		return
 	current_state.exit()
 	current_state = _states[state_name]
+	current_state_name = state_name
 	current_state.enter()
 
 func handle_input(event: InputEvent) -> void:
