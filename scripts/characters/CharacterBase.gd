@@ -15,6 +15,7 @@ var state_machine: CharacterStateMachine
 var hitbox: HitboxComponent
 var hurtbox: HurtboxComponent
 var animation_player: AnimationPlayer
+var upgrade_manager: UpgradeManager
 
 var _facing: float = 1.0
 var _jump_pressed: bool = false
@@ -27,12 +28,14 @@ var _action_attack: StringName
 const GRAVITY: float = 980.0
 
 func _ready() -> void:
+	stats = stats.duplicate() as CharacterStats
 	_cache_input_actions()
 	current_hp = stats.max_hp
 	jumps_remaining = stats.max_jumps
 	hitbox = $HitboxComponent as HitboxComponent
 	hurtbox = $HurtboxComponent as HurtboxComponent
 	animation_player = $AnimationPlayer as AnimationPlayer
+	upgrade_manager = $UpgradeManager as UpgradeManager
 	hurtbox.hit_received.connect(_on_hit_received)
 	_setup_state_machine()
 	state_machine.start(&"Idle")

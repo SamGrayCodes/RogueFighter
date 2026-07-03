@@ -10,3 +10,4 @@ extends Resource
 @export var attack_power: float = 1.0
 @export var weight: float = 1.0
 @export var gravity_scale: float = 1.0
+@export var knockback_bonus: float = 0.0

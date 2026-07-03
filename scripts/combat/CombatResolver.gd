@@ -17,7 +17,7 @@ func resolve_hit(target: CharacterBase, attack_data: AttackData, attacker: Chara
 	if facing == 0.0:
 		facing = 1.0
 	var angle_rad: float = deg_to_rad(attack_data.knockback_angle)
-	var kb_power: float = attack_data.knockback_power * rage_bonus / target.stats.weight
+	var kb_power: float = (attack_data.knockback_power + attacker.stats.knockback_bonus) * rage_bonus / target.stats.weight
 	target.velocity = Vector2(
 		cos(angle_rad) * kb_power * facing,
 		sin(angle_rad) * kb_power
