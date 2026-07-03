@@ -1,0 +1,15 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/characters/CharacterStats.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+character_id = &"sam"
+display_name = "Sam"
+max_hp = 100.0
+move_speed = 200.0
+jump_velocity = -560.0
+max_jumps = 2
+attack_power = 1.0
+weight = 1.0
+gravity_scale = 1.1
