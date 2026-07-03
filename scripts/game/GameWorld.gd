@@ -14,9 +14,19 @@ var _active_mode: GameMode
 @onready var _hud: CanvasLayer = $HUD
 
 func _ready() -> void:
+	_current_stage = _find_stage()
+	for child: Node in get_children():
+		if child is CharacterBase:
+			register_character(child as CharacterBase)
 	_active_mode = StandardMode.new()
 	GameState.set_phase(GameState.MatchPhase.ROUND_ACTIVE)
 	_start_round()
+
+func _find_stage() -> StageBase:
+	for child: Node in get_children():
+		if child is StageBase:
+			return child as StageBase
+	return null
 
 func _physics_process(delta: float) -> void:
 	if not _is_round_active:

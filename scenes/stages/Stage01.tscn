@@ -1,0 +1,110 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/stages/StageBase.tscn" id="1"]
+[ext_resource type="Script" path="res://scripts/stages/Platform.gd" id="2"]
+
+[sub_resource type="RectangleShape2D" id="BlastShapeH"]
+size = Vector2(2800.0, 120.0)
+
+[sub_resource type="RectangleShape2D" id="BlastShapeV"]
+size = Vector2(120.0, 2400.0)
+
+[sub_resource type="RectangleShape2D" id="GroundShape"]
+size = Vector2(1280.0, 40.0)
+
+[sub_resource type="RectangleShape2D" id="SideShape"]
+size = Vector2(240.0, 16.0)
+
+[sub_resource type="RectangleShape2D" id="CenterShape"]
+size = Vector2(200.0, 16.0)
+
+[node name="Stage01" instance=ExtResource("1")]
+stage_id = &"stage_01"
+display_name = "Platform Zero"
+spawn_points = [NodePath("SpawnPoints/Spawn0"), NodePath("SpawnPoints/Spawn1"), NodePath("SpawnPoints/Spawn2"), NodePath("SpawnPoints/Spawn3")]
+camera_bounds = Rect2(-700.0, -500.0, 1400.0, 1100.0)
+
+[node name="Spawn0" parent="SpawnPoints"]
+position = Vector2(-420.0, 220.0)
+
+[node name="Spawn1" parent="SpawnPoints"]
+position = Vector2(420.0, 220.0)
+
+[node name="Spawn2" parent="SpawnPoints"]
+position = Vector2(-320.0, 60.0)
+
+[node name="Spawn3" parent="SpawnPoints"]
+position = Vector2(320.0, 60.0)
+
+[node name="BlastZoneBottom" parent="."]
+position = Vector2(0.0, 600.0)
+
+[node name="CollisionShape2D" parent="BlastZoneBottom"]
+shape = SubResource("BlastShapeH")
+
+[node name="BlastZoneTop" parent="."]
+position = Vector2(0.0, -700.0)
+
+[node name="CollisionShape2D" parent="BlastZoneTop"]
+shape = SubResource("BlastShapeH")
+
+[node name="BlastZoneLeft" parent="."]
+position = Vector2(-1000.0, 0.0)
+
+[node name="CollisionShape2D" parent="BlastZoneLeft"]
+shape = SubResource("BlastShapeV")
+
+[node name="BlastZoneRight" parent="."]
+position = Vector2(1000.0, 0.0)
+
+[node name="CollisionShape2D" parent="BlastZoneRight"]
+shape = SubResource("BlastShapeV")
+
+[node name="Background" type="Polygon2D" parent="."]
+z_index = -10
+color = Color(0.07, 0.07, 0.12, 1.0)
+polygon = PackedVector2Array(-1000, -700, 1000, -700, 1000, 650, -1000, 650)
+
+[node name="Ground" type="StaticBody2D" parent="."]
+script = ExtResource("2")
+position = Vector2(0.0, 280.0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
+shape = SubResource("GroundShape")
+
+[node name="Visual" type="Polygon2D" parent="Ground"]
+color = Color(0.22, 0.22, 0.27, 1.0)
+polygon = PackedVector2Array(-640, -20, 640, -20, 640, 20, -640, 20)
+
+[node name="PlatformLeft" type="StaticBody2D" parent="."]
+script = ExtResource("2")
+position = Vector2(-320.0, 120.0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlatformLeft"]
+shape = SubResource("SideShape")
+
+[node name="Visual" type="Polygon2D" parent="PlatformLeft"]
+color = Color(0.28, 0.28, 0.35, 1.0)
+polygon = PackedVector2Array(-120, -8, 120, -8, 120, 8, -120, 8)
+
+[node name="PlatformRight" type="StaticBody2D" parent="."]
+script = ExtResource("2")
+position = Vector2(320.0, 120.0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlatformRight"]
+shape = SubResource("SideShape")
+
+[node name="Visual" type="Polygon2D" parent="PlatformRight"]
+color = Color(0.28, 0.28, 0.35, 1.0)
+polygon = PackedVector2Array(-120, -8, 120, -8, 120, 8, -120, 8)
+
+[node name="PlatformCenter" type="StaticBody2D" parent="."]
+script = ExtResource("2")
+position = Vector2(0.0, -40.0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlatformCenter"]
+shape = SubResource("CenterShape")
+
+[node name="Visual" type="Polygon2D" parent="PlatformCenter"]
+color = Color(0.28, 0.28, 0.35, 1.0)
+polygon = PackedVector2Array(-100, -8, 100, -8, 100, 8, -100, 8)
