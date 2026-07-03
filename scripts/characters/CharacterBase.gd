@@ -19,10 +19,15 @@ var animation_player: AnimationPlayer
 var _facing: float = 1.0
 var _jump_pressed: bool = false
 var _attack_pressed: bool = false
+var _action_left: StringName
+var _action_right: StringName
+var _action_jump: StringName
+var _action_attack: StringName
 
 const GRAVITY: float = 980.0
 
 func _ready() -> void:
+	_cache_input_actions()
 	current_hp = stats.max_hp
 	jumps_remaining = stats.max_jumps
 	hitbox = $HitboxComponent as HitboxComponent
@@ -31,6 +36,13 @@ func _ready() -> void:
 	hurtbox.hit_received.connect(_on_hit_received)
 	_setup_state_machine()
 	state_machine.start(&"Idle")
+
+func _cache_input_actions() -> void:
+	var p: int = player_index + 1
+	_action_left   = "p%d_left"   % p
+	_action_right  = "p%d_right"  % p
+	_action_jump   = "p%d_jump"   % p
+	_action_attack = "p%d_attack" % p
 
 func _setup_state_machine() -> void:
 	state_machine = CharacterStateMachine.new()
@@ -51,8 +63,8 @@ func _setup_state_machine() -> void:
 		state_machine.register(key, state)
 
 func _unhandled_input(event: InputEvent) -> void:
-	_jump_pressed = event.is_action_pressed("p%d_jump" % player_index)
-	_attack_pressed = event.is_action_pressed("p%d_attack" % player_index)
+	_jump_pressed = event.is_action_pressed(_action_jump)
+	_attack_pressed = event.is_action_pressed(_action_attack)
 	state_machine.handle_input(event)
 
 func _physics_process(delta: float) -> void:
@@ -66,7 +78,7 @@ func _physics_process(delta: float) -> void:
 		scale.x = _facing
 
 func get_move_input() -> float:
-	var dir: float = Input.get_axis("p%d_left" % player_index, "p%d_right" % player_index)
+	var dir: float = Input.get_axis(_action_left, _action_right)
 	if dir != 0.0:
 		_facing = sign(dir)
 	return dir

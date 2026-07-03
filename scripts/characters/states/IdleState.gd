@@ -2,6 +2,7 @@ class_name IdleState
 extends CharacterState
 
 func enter() -> void:
+	character.velocity.x = 0.0
 	character.play_animation(&"idle")
 
 func physics_update(_delta: float) -> void:
