@@ -1,0 +1,15 @@
+[gd_resource type="Resource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/AttackData.gd" id="1"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
+size = Vector2(50.0, 24.0)
+
+[resource]
+script = ExtResource("1")
+damage = 8.0
+knockback_power = 300.0
+knockback_angle = -55.0
+hitstun_duration = 0.18
+active_frames = Vector2i(2, 5)
+hit_shape = SubResource("RectangleShape2D_1")

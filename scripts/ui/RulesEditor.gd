@@ -136,8 +136,8 @@ func _add_grid_row(grid: GridContainer, label_text: String, control: Control) ->
 
 func _build_mode_option() -> OptionButton:
 	var opt: OptionButton = OptionButton.new()
-	var ids: Array[StringName] = [&"standard", &"no_upgrades", &"sudden_death"]
-	var labels: Array[String] = ["Standard", "No Upgrades", "Sudden Death"]
+	var ids: Array[StringName] = [&"standard", &"no_upgrades", &"sudden_death", &"glass_cannon", &"marathon"]
+	var labels: Array[String] = ["Standard", "No Upgrades", "Sudden Death", "Glass Cannon", "Marathon"]
 	for lbl: String in labels:
 		opt.add_item(lbl)
 	for i: int in ids.size():

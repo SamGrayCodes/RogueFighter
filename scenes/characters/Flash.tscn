@@ -1,0 +1,20 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/characters/CharacterBase.tscn" id="1"]
+[ext_resource type="Script" path="res://scripts/characters/flash/Flash.gd" id="2"]
+[ext_resource type="Resource" path="res://resources/characters/flash_stats.tres" id="3"]
+[ext_resource type="Resource" path="res://resources/characters/flash_ground_attack.tres" id="4"]
+[ext_resource type="Resource" path="res://resources/characters/flash_air_attack.tres" id="5"]
+
+[node name="Flash" instance=ExtResource("1")]
+script = ExtResource("2")
+stats = ExtResource("3")
+ground_attack = ExtResource("4")
+air_attack = ExtResource("5")
+
+[node name="Sprite2D" parent="." index="4"]
+visible = false
+
+[node name="Visual" type="Polygon2D" parent="."]
+color = Color(0.2, 0.85, 0.55, 1.0)
+polygon = PackedVector2Array(-14, -46, 14, -46, 14, 0, -14, 0)

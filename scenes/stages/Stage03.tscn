@@ -1,0 +1,96 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/stages/StageBase.tscn" id="1"]
+[ext_resource type="Script" path="res://scripts/stages/Platform.gd" id="2"]
+
+[sub_resource type="RectangleShape2D" id="BlastShapeH"]
+size = Vector2(3000.0, 120.0)
+
+[sub_resource type="RectangleShape2D" id="BlastShapeV"]
+size = Vector2(120.0, 2400.0)
+
+[sub_resource type="RectangleShape2D" id="PillarShape"]
+size = Vector2(420.0, 40.0)
+
+[sub_resource type="RectangleShape2D" id="BridgeShape"]
+size = Vector2(320.0, 16.0)
+
+[node name="Stage03" instance=ExtResource("1")]
+stage_id = &"stage_03"
+display_name = "Twin Pillars"
+spawn_points = [NodePath("SpawnPoints/Spawn0"), NodePath("SpawnPoints/Spawn1"), NodePath("SpawnPoints/Spawn2"), NodePath("SpawnPoints/Spawn3")]
+camera_bounds = Rect2(-760.0, -520.0, 1520.0, 1140.0)
+
+[node name="Spawn0" parent="SpawnPoints"]
+position = Vector2(-400.0, 180.0)
+
+[node name="Spawn1" parent="SpawnPoints"]
+position = Vector2(400.0, 180.0)
+
+[node name="Spawn2" parent="SpawnPoints"]
+position = Vector2(-120.0, -80.0)
+
+[node name="Spawn3" parent="SpawnPoints"]
+position = Vector2(120.0, -80.0)
+
+[node name="BlastZoneBottom" parent="."]
+position = Vector2(0.0, 640.0)
+
+[node name="CollisionShape2D" parent="BlastZoneBottom"]
+shape = SubResource("BlastShapeH")
+
+[node name="BlastZoneTop" parent="."]
+position = Vector2(0.0, -720.0)
+
+[node name="CollisionShape2D" parent="BlastZoneTop"]
+shape = SubResource("BlastShapeH")
+
+[node name="BlastZoneLeft" parent="."]
+position = Vector2(-1060.0, 0.0)
+
+[node name="CollisionShape2D" parent="BlastZoneLeft"]
+shape = SubResource("BlastShapeV")
+
+[node name="BlastZoneRight" parent="."]
+position = Vector2(1060.0, 0.0)
+
+[node name="CollisionShape2D" parent="BlastZoneRight"]
+shape = SubResource("BlastShapeV")
+
+[node name="Background" type="Polygon2D" parent="."]
+z_index = -10
+color = Color(0.1, 0.06, 0.1, 1.0)
+polygon = PackedVector2Array(-1060, -720, 1060, -720, 1060, 620, -1060, 620)
+
+[node name="PillarLeft" type="StaticBody2D" parent="."]
+script = ExtResource("2")
+position = Vector2(-380.0, 280.0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PillarLeft"]
+shape = SubResource("PillarShape")
+
+[node name="Visual" type="Polygon2D" parent="PillarLeft"]
+color = Color(0.28, 0.2, 0.28, 1.0)
+polygon = PackedVector2Array(-210, -20, 210, -20, 210, 20, -210, 20)
+
+[node name="PillarRight" type="StaticBody2D" parent="."]
+script = ExtResource("2")
+position = Vector2(380.0, 280.0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PillarRight"]
+shape = SubResource("PillarShape")
+
+[node name="Visual" type="Polygon2D" parent="PillarRight"]
+color = Color(0.28, 0.2, 0.28, 1.0)
+polygon = PackedVector2Array(-210, -20, 210, -20, 210, 20, -210, 20)
+
+[node name="Bridge" type="StaticBody2D" parent="."]
+script = ExtResource("2")
+position = Vector2(0.0, 40.0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bridge"]
+shape = SubResource("BridgeShape")
+
+[node name="Visual" type="Polygon2D" parent="Bridge"]
+color = Color(0.36, 0.26, 0.36, 1.0)
+polygon = PackedVector2Array(-160, -8, 160, -8, 160, 8, -160, 8)
