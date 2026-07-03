@@ -36,7 +36,7 @@ func _collect_characters() -> void:
 			var pd: GameState.PlayerData = GameState.PlayerData.new()
 			pd.player_index = character.player_index
 			GameState.players.append(pd)
-			character.eliminated.connect(_on_character_eliminated.bind(character))
+			character.eliminated.connect(_on_character_eliminated)
 
 func _find_stage() -> StageBase:
 	for child: Node in get_children():
