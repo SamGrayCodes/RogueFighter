@@ -1,5 +1,5 @@
 class_name NetworkTransport
-extends RefCounted
+extends Node
 
 signal peer_connected(id: int)
 signal peer_disconnected(id: int)
