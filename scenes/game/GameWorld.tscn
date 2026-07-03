@@ -20,10 +20,15 @@ position = Vector2(0, 0)
 
 [node name="RulesEditor" parent="." instance=ExtResource("5")]
 
-[node name="Sam_P1" parent="." instance=ExtResource("3")]
+[node name="Players" type="Node2D" parent="."]
+
+[node name="Sam_P1" parent="Players" instance=ExtResource("3")]
 position = Vector2(-420.0, 220.0)
 player_index = 0
 
-[node name="Sam_P2" parent="." instance=ExtResource("3")]
+[node name="Sam_P2" parent="Players" instance=ExtResource("3")]
 position = Vector2(420.0, 220.0)
 player_index = 1
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+spawn_path = NodePath("../Players")

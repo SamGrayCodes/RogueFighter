@@ -1,6 +1,8 @@
 class_name GameWorld
 extends Node2D
 
+const SAM_SCENE_PATH: String = "res://scenes/characters/Sam.tscn"
+
 var _active_characters: Array[CharacterBase] = []
 var _all_characters: Array[CharacterBase] = []
 var _current_stage: StageBase
@@ -12,24 +14,75 @@ var _active_mode: GameMode
 @onready var _hud: CanvasLayer = $HUD
 @onready var _upgrade_screen: UpgradeScreen = $UpgradeScreen
 @onready var _rules_editor: RulesEditor = $RulesEditor
+@onready var _players: Node2D = $Players
+@onready var _spawner: MultiplayerSpawner = $MultiplayerSpawner
 
 func _ready() -> void:
 	_current_stage = _find_stage()
-	_collect_characters()
-	_rules_editor.rules_applied.connect(_on_rules_applied, CONNECT_ONE_SHOT)
-	_rules_editor.show()
+	_spawner.spawn_function = _spawn_character
+	if NetworkManager.is_networked():
+		_setup_networked()
+	else:
+		_setup_local()
 
 func _physics_process(delta: float) -> void:
-	if not _is_round_active:
+	_update_camera()
+	if not _is_sim_authority() or not _is_round_active:
 		return
 	_round_timer -= delta
 	if _round_timer <= 0.0 and GameState.active_rules.round_time_limit > 0.0:
 		_end_round()
+
+# --- Setup -------------------------------------------------------------------
+
+func _setup_local() -> void:
+	_collect_characters()
+	_rules_editor.rules_applied.connect(_on_rules_applied, CONNECT_ONE_SHOT)
+	_rules_editor.show()
+
+func _setup_networked() -> void:
+	# Pre-placed characters exist on every peer via the scene file; the server
+	# instead spawns one character per roster entry through the spawner.
+	_clear_preplaced_characters()
+	_rules_editor.hide()
+	if not multiplayer.is_server():
 		return
-	_update_camera()
+	# No-upgrades keeps the round loop authoritative without the (yet unbuilt)
+	# networked upgrade-selection flow. See Phase 5.
+	_active_mode = GameState.get_mode_for_id(&"no_upgrades")
+	GameState.active_mode = _active_mode
+	_spawn_networked_players()
+	GameState.phase_changed.connect(_on_phase_changed)
+	GameState.set_phase(GameState.MatchPhase.ROUND_ACTIVE)
+	_reset_characters()
+	_start_round()
+
+func _spawn_networked_players() -> void:
+	for pd: GameState.PlayerData in GameState.players:
+		var character: CharacterBase = _spawner.spawn({
+			"scene": SAM_SCENE_PATH,
+			"index": pd.player_index,
+			"peer": pd.peer_id,
+		}) as CharacterBase
+		_all_characters.append(character)
+		character.eliminated.connect(_on_character_eliminated)
+
+## Runs on every peer via the MultiplayerSpawner with identical spawn data.
+func _spawn_character(data: Dictionary) -> Node:
+	var scene: PackedScene = load(data["scene"]) as PackedScene
+	var character: CharacterBase = scene.instantiate() as CharacterBase
+	character.player_index = data["index"]
+	character.input_authority = data["peer"]
+	character.name = "Player_%d" % int(data["index"])
+	return character
+
+func _clear_preplaced_characters() -> void:
+	for child: Node in _players.get_children():
+		if child is CharacterBase:
+			child.queue_free()
 
 func _collect_characters() -> void:
-	for child: Node in get_children():
+	for child: Node in _players.get_children():
 		if child is CharacterBase:
 			var character: CharacterBase = child as CharacterBase
 			_all_characters.append(character)
@@ -43,6 +96,8 @@ func _find_stage() -> StageBase:
 		if child is StageBase:
 			return child as StageBase
 	return null
+
+# --- Round loop (server / local authority only) ------------------------------
 
 func _reset_characters() -> void:
 	_active_characters.clear()
@@ -112,15 +167,24 @@ func _on_character_eliminated(character: CharacterBase) -> void:
 	if winner >= 0:
 		_end_round()
 
+# --- Camera (runs on every peer) ---------------------------------------------
+
 func _update_camera() -> void:
-	if _active_characters.is_empty():
+	var tracked: Array[Vector2] = []
+	for child: Node in _players.get_children():
+		if child is CharacterBase and (child as CanvasItem).visible:
+			tracked.append((child as Node2D).global_position)
+	if tracked.is_empty():
 		return
 	var avg: Vector2 = Vector2.ZERO
-	for c: CharacterBase in _active_characters:
-		avg += c.global_position
-	avg /= float(_active_characters.size())
+	for pos: Vector2 in tracked:
+		avg += pos
+	avg /= float(tracked.size())
 	_camera.global_position = _camera.global_position.lerp(avg, 0.05)
 	if _current_stage != null:
 		var bounds: Rect2 = _current_stage.camera_bounds
 		_camera.global_position.x = clampf(_camera.global_position.x, bounds.position.x, bounds.end.x)
 		_camera.global_position.y = clampf(_camera.global_position.y, bounds.position.y, bounds.end.y)
+
+func _is_sim_authority() -> bool:
+	return not multiplayer.has_multiplayer_peer() or multiplayer.is_server()
