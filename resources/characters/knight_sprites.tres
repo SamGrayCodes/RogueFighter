@@ -1,0 +1,62 @@
+[gd_resource type="Resource" script_class="CharacterSpriteSet" format=3 uid="uid://btmfi4wwjhdqa"]
+
+[ext_resource type="Script" uid="uid://bokpgqjnjoeqb" path="res://scripts/characters/SpriteClip.gd" id="1_07v0f"]
+[ext_resource type="Texture2D" uid="uid://c76gyfpt4imhd" path="res://resources/sprites/knight/Idle.png" id="2_kv11q"]
+[ext_resource type="Script" uid="uid://p4m0roh51pb5" path="res://scripts/characters/CharacterSpriteSet.gd" id="2_t2jv1"]
+[ext_resource type="Texture2D" uid="uid://dce1ofbdhnvl" path="res://resources/sprites/knight/Run.png" id="3_jxcr5"]
+[ext_resource type="Texture2D" uid="uid://br82mtkr1yqa2" path="res://resources/sprites/knight/Jump.png" id="4_6udvj"]
+[ext_resource type="Texture2D" uid="uid://dsn3gekqnlsby" path="res://resources/sprites/knight/Fall.png" id="5_4ig0e"]
+[ext_resource type="Texture2D" uid="uid://r4435a02ugh7" path="res://resources/sprites/knight/Attack1.png" id="6_sxsf2"]
+[ext_resource type="Texture2D" uid="uid://c45tmlpttllkf" path="res://resources/sprites/knight/Take Hit.png" id="7_uuhyh"]
+
+[sub_resource type="Resource" id="Resource_2w1l1"]
+script = ExtResource("1_07v0f")
+action = &"idle"
+sheet = ExtResource("2_kv11q")
+fps = 8.0
+
+[sub_resource type="Resource" id="Resource_rcbya"]
+script = ExtResource("1_07v0f")
+action = &"run"
+sheet = ExtResource("3_jxcr5")
+fps = 12.0
+
+[sub_resource type="Resource" id="Resource_a7frj"]
+script = ExtResource("1_07v0f")
+action = &"jump"
+sheet = ExtResource("4_6udvj")
+loop = false
+
+[sub_resource type="Resource" id="Resource_kv11q"]
+script = ExtResource("1_07v0f")
+action = &"fall"
+sheet = ExtResource("5_4ig0e")
+fps = 8.0
+
+[sub_resource type="Resource" id="Resource_jxcr5"]
+script = ExtResource("1_07v0f")
+action = &"attack"
+sheet = ExtResource("6_sxsf2")
+fps = 14.0
+loop = false
+
+[sub_resource type="Resource" id="Resource_6udvj"]
+script = ExtResource("1_07v0f")
+action = &"air_attack"
+sheet = ExtResource("7_uuhyh")
+fps = 14.0
+loop = false
+
+[sub_resource type="Resource" id="Resource_4ig0e"]
+script = ExtResource("1_07v0f")
+action = &"stun"
+sheet = ExtResource("7_uuhyh")
+
+[sub_resource type="Resource" id="Resource_sxsf2"]
+script = ExtResource("1_07v0f")
+action = &"knockback"
+sheet = ExtResource("7_uuhyh")
+
+[resource]
+script = ExtResource("2_t2jv1")
+clips = Array[ExtResource("1_07v0f")]([SubResource("Resource_2w1l1"), SubResource("Resource_rcbya"), SubResource("Resource_a7frj"), SubResource("Resource_kv11q"), SubResource("Resource_jxcr5"), SubResource("Resource_6udvj"), SubResource("Resource_4ig0e"), SubResource("Resource_sxsf2")])
