@@ -18,6 +18,6 @@ func physics_update(_delta: float) -> void:
 		character.hitbox.activate(_attack_data)
 	else:
 		character.hitbox.deactivate()
-	var anim_done: bool = not character.animation_player.is_playing()
+	var anim_done: bool = not character.is_action_playing()
 	if anim_done:
 		machine.transition_to(&"Idle")
