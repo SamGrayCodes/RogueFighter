@@ -1,20 +1,24 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene format=3 uid="uid://daptdgqi5e1ed"]
 
 [ext_resource type="PackedScene" path="res://scenes/characters/CharacterBase.tscn" id="1"]
-[ext_resource type="Script" path="res://scripts/characters/sam/Sam.gd" id="2"]
+[ext_resource type="Script" uid="uid://bn3vprhhsokyw" path="res://scripts/characters/sam/Sam.gd" id="2"]
 [ext_resource type="Resource" path="res://resources/characters/sam_stats.tres" id="3"]
-[ext_resource type="Resource" path="res://resources/characters/sam_ground_attack.tres" id="4"]
-[ext_resource type="Resource" path="res://resources/characters/sam_air_attack.tres" id="5"]
+[ext_resource type="Resource" uid="uid://d35e37vo4vsxu" path="res://resources/characters/sam_ground_attack.tres" id="4"]
+[ext_resource type="Resource" uid="uid://me78aoaei7wd" path="res://resources/characters/sam_air_attack.tres" id="5"]
+[ext_resource type="Resource" uid="uid://btmfi4wwjhdqa" path="res://resources/characters/knight_sprites.tres" id="6_pss78"]
 
-[node name="Sam" instance=ExtResource("1")]
+[node name="Sam" unique_id=1737752990 instance=ExtResource("1")]
 script = ExtResource("2")
 stats = ExtResource("3")
 ground_attack = ExtResource("4")
 air_attack = ExtResource("5")
+sprite_set = ExtResource("6_pss78")
 
-[node name="Sprite2D" parent="." index="4"]
+[node name="Sprite2D" parent="." index="5"]
 visible = false
+scale = Vector2(0.35, 0.35)
+offset = Vector2(0, -70)
 
-[node name="Visual" type="Polygon2D" parent="."]
-color = Color(0.22, 0.47, 0.9, 1.0)
+[node name="Visual" type="Polygon2D" parent="." index="8" unique_id=1927474546]
+color = Color(0.22, 0.47, 0.9, 1)
 polygon = PackedVector2Array(-18, -52, 18, -52, 18, 0, -18, 0)

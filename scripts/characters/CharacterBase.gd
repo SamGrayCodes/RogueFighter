@@ -7,6 +7,10 @@ signal hp_changed(new_hp: float, max_hp: float)
 @export var stats: CharacterStats
 @export var ground_attack: AttackData
 @export var air_attack: AttackData
+## Optional per-character sprite sheets. When assigned and fully valid, the character
+## renders from an AnimatedSprite2D instead of the procedural polygon; otherwise it falls
+## back to the ProceduralAnimator path.
+@export var sprite_set: CharacterSpriteSet
 
 ## Player slot (0-based). Drives spawn ordering, indicator color, and — for
 ## local (non-networked) play — which p#_ input action set controls this body.
@@ -21,6 +25,7 @@ var state_machine: CharacterStateMachine
 var hitbox: HitboxComponent
 var hurtbox: HurtboxComponent
 var animation_player: AnimationPlayer
+var animated_sprite: AnimatedSprite2D
 var upgrade_manager: UpgradeManager
 
 ## Current-state key mirrored for MultiplayerSynchronizer. Written by the
@@ -32,6 +37,9 @@ var synced_state: StringName = &"Idle":
 			_apply_remote_state(value)
 
 var _facing: float = 1.0
+## True once a sprite set builds successfully; routes play_animation/is_action_playing to
+## the AnimatedSprite2D instead of the procedural AnimationPlayer.
+var _uses_sprite_frames: bool = false
 ## Held-input the simulating peer reads this frame; the previous frame's copy is
 ## used to derive just-pressed edges.
 var _input: InputData = InputData.new()
@@ -63,6 +71,7 @@ func _ready() -> void:
 	hurtbox = $HurtboxComponent as HurtboxComponent
 	animation_player = $AnimationPlayer as AnimationPlayer
 	upgrade_manager = $UpgradeManager as UpgradeManager
+	_setup_sprite_frames()
 	hurtbox.hit_received.connect(_on_hit_received)
 	_setup_state_machine()
 	state_machine.start(&"Idle")
@@ -122,7 +131,7 @@ func _physics_process(delta: float) -> void:
 
 	_prev_input.copy_from(_input)
 	if _facing != 0.0:
-		scale.x = _facing
+		_apply_facing(_facing)
 	synced_state = state_machine.current_state_name
 
 func _sample_local_input() -> void:
@@ -175,9 +184,47 @@ func get_current_attack_data() -> AttackData:
 		return ground_attack
 	return air_attack
 
+## Caches the AnimatedSprite2D and, when a valid sprite set is assigned, builds its frames
+## and switches the character over to sprite rendering. Any failure leaves the procedural
+## polygon path intact (all-or-nothing fallback).
+func _setup_sprite_frames() -> void:
+	animated_sprite = $Sprite as AnimatedSprite2D
+	if sprite_set == null:
+		return
+	var frames: SpriteFrames = SpriteFramesBuilder.build(sprite_set)
+	if frames == null:
+		return
+	animated_sprite.sprite_frames = frames
+	animated_sprite.visible = true
+	_uses_sprite_frames = true
+	var visual: CanvasItem = get_node_or_null(^"Visual") as CanvasItem
+	if visual:
+		visual.hide()
+
 func play_animation(anim_name: StringName) -> void:
+	if _uses_sprite_frames:
+		if animated_sprite.sprite_frames.has_animation(anim_name):
+			animated_sprite.play(anim_name)
+		return
 	if animation_player and animation_player.has_animation(anim_name):
 		animation_player.play(anim_name)
+
+## Whether the current action clip is still playing. Backs the attack states' completion
+## check across both the sprite and procedural animators.
+func is_action_playing() -> bool:
+	if _uses_sprite_frames:
+		return animated_sprite.is_playing()
+	return animation_player.is_playing()
+
+## Faces the character left/right. Sprite characters flip the AnimatedSprite2D locally;
+## flipping the whole body via scale.x is unstable (Godot re-decomposes a negative scale on
+## a physics body into a rotation, which makes an asymmetric sprite spaz and stick). The
+## procedural polygon is symmetric, so it keeps the original body-scale flip.
+func _apply_facing(facing: float) -> void:
+	if _uses_sprite_frames:
+		animated_sprite.flip_h = facing < 0.0
+	else:
+		scale.x = facing
 
 func take_damage_from(attack_data: AttackData, attacker: CharacterBase) -> void:
 	GameState.combat_resolver.resolve_hit(self, attack_data, attacker)
