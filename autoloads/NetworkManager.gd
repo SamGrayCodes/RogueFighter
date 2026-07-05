@@ -36,10 +36,18 @@ func join_game(address: String, port: int = DEFAULT_PORT) -> Error:
 func leave() -> void:
 	if transport:
 		transport.disconnect_all()
+	multiplayer.multiplayer_peer = null
 	connected_peers.clear()
 	roster_changed.emit()
 
 func use_local() -> void:
+	# Local play must be genuinely offline: tear down any peer left over from
+	# visiting the online lobby, otherwise has_multiplayer_peer() stays true and
+	# the whole game (spawning, input mapping) takes the networked path.
+	if transport:
+		transport.disconnect_all()
+	multiplayer.multiplayer_peer = null
+	connected_peers.clear()
 	_set_transport(LocalTransport.new())
 
 func use_enet() -> void:

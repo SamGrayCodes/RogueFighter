@@ -92,6 +92,12 @@ func _build_ui() -> void:
 	_start_button.pressed.connect(_on_start_pressed)
 	vbox.add_child(_start_button)
 
+	var back_button: Button = Button.new()
+	back_button.text = "BACK"
+	back_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	back_button.pressed.connect(_on_back_pressed)
+	vbox.add_child(back_button)
+
 func _labeled_row(label_text: String) -> HBoxContainer:
 	var row: HBoxContainer = HBoxContainer.new()
 	row.add_theme_constant_override("separation", 8)
@@ -133,6 +139,10 @@ func _on_join_pressed() -> void:
 
 func _on_start_pressed() -> void:
 	NetworkManager.start_match()
+
+func _on_back_pressed() -> void:
+	NetworkManager.leave()
+	get_tree().change_scene_to_file("res://scenes/ui/MainMenu.tscn")
 
 func _on_connection_succeeded() -> void:
 	if not NetworkManager.is_host():
