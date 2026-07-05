@@ -3,8 +3,8 @@
 [ext_resource type="PackedScene" path="res://scenes/characters/CharacterBase.tscn" id="1"]
 [ext_resource type="Script" uid="uid://b8r47vjoyiwxw" path="res://scripts/characters/flash/Flash.gd" id="2"]
 [ext_resource type="Resource" path="res://resources/characters/flash_stats.tres" id="3"]
-[ext_resource type="Resource" path="res://resources/characters/flash_ground_attack.tres" id="4"]
-[ext_resource type="Resource" path="res://resources/characters/flash_air_attack.tres" id="5"]
+[ext_resource type="Resource" uid="uid://bom5piitmrvah" path="res://resources/characters/flash_ground_attack.tres" id="4"]
+[ext_resource type="Resource" uid="uid://y0pedsc0fm5f" path="res://resources/characters/flash_air_attack.tres" id="5"]
 
 [node name="Flash" unique_id=1634401610 instance=ExtResource("1")]
 script = ExtResource("2")

@@ -11,6 +11,10 @@ signal hp_changed(new_hp: float, max_hp: float)
 ## renders from an AnimatedSprite2D instead of the procedural polygon; otherwise it falls
 ## back to the ProceduralAnimator path.
 @export var sprite_set: CharacterSpriteSet
+## Color the sprite flashes toward when hit (sprite characters only).
+@export var hit_flash_color: Color = Color(1.0, 0.0, 0.0)
+## Duration in seconds of the one-shot hit flash fade-out.
+@export var hit_flash_duration: float = 0.15
 
 ## Player slot (0-based). Drives spawn ordering, indicator color, and — for
 ## local (non-networked) play — which p#_ input action set controls this body.
@@ -54,6 +58,7 @@ var _action_right: StringName
 var _action_jump: StringName
 var _action_attack: StringName
 
+const HIT_FLASH_SHADER: Shader = preload("res://resources/shaders/hit_flash.gdshader")
 const GRAVITY: float = 980.0
 const _PLAYER_COLORS: Array[Color] = [
 	Color(0.2, 0.4, 1.0),
@@ -197,6 +202,12 @@ func _setup_sprite_frames() -> void:
 	animated_sprite.sprite_frames = frames
 	animated_sprite.visible = true
 	_uses_sprite_frames = true
+	# Per-instance ShaderMaterial so each character's hit flash animates independently.
+	var flash_mat: ShaderMaterial = ShaderMaterial.new()
+	flash_mat.shader = HIT_FLASH_SHADER
+	flash_mat.set_shader_parameter("flash_color", hit_flash_color)
+	flash_mat.set_shader_parameter("flash_amount", 0.0)
+	animated_sprite.material = flash_mat
 	var visual: CanvasItem = get_node_or_null(^"Visual") as CanvasItem
 	if visual:
 		visual.hide()
@@ -225,6 +236,22 @@ func _apply_facing(facing: float) -> void:
 		animated_sprite.flip_h = facing < 0.0
 	else:
 		scale.x = facing
+
+## Plays a one-shot hit flash on the sprite: snaps to full flash then fades back over
+## hit_flash_duration. No-op for procedural (polygon) characters, which already tint via
+## their hit animation's modulate track.
+func flash_hit() -> void:
+	if not _uses_sprite_frames:
+		return
+	var mat: ShaderMaterial = animated_sprite.material as ShaderMaterial
+	if mat == null:
+		return
+	mat.set_shader_parameter("flash_amount", 1.0)
+	var tween: Tween = create_tween()
+	tween.tween_method(
+		func(v: float) -> void: mat.set_shader_parameter("flash_amount", v),
+		1.0, 0.0, hit_flash_duration
+	)
 
 func take_damage_from(attack_data: AttackData, attacker: CharacterBase) -> void:
 	GameState.combat_resolver.resolve_hit(self, attack_data, attacker)

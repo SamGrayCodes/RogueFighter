@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://r4435a02ugh7" path="res://resources/sprites/knight/Attack1.png" id="6_sxsf2"]
 [ext_resource type="Texture2D" uid="uid://cnynld8aglheu" path="res://resources/sprites/knight/Attack2.png" id="7_jxcr5"]
 [ext_resource type="Texture2D" uid="uid://c45tmlpttllkf" path="res://resources/sprites/knight/Take Hit.png" id="7_uuhyh"]
+[ext_resource type="Texture2D" uid="uid://bds15swnfyvpb" path="res://resources/sprites/knight/Death.png" id="9_6udvj"]
 
 [sub_resource type="Resource" id="Resource_2w1l1"]
 script = ExtResource("1_07v0f")
@@ -56,7 +57,9 @@ sheet = ExtResource("7_uuhyh")
 [sub_resource type="Resource" id="Resource_sxsf2"]
 script = ExtResource("1_07v0f")
 action = &"knockback"
-sheet = ExtResource("7_uuhyh")
+sheet = ExtResource("9_6udvj")
+fps = 12.0
+loop = false
 
 [resource]
 script = ExtResource("2_t2jv1")
