@@ -131,7 +131,7 @@ func _physics_process(delta: float) -> void:
 
 	_prev_input.copy_from(_input)
 	if _facing != 0.0:
-		scale.x = _facing
+		_apply_facing(_facing)
 	synced_state = state_machine.current_state_name
 
 func _sample_local_input() -> void:
@@ -215,6 +215,16 @@ func is_action_playing() -> bool:
 	if _uses_sprite_frames:
 		return animated_sprite.is_playing()
 	return animation_player.is_playing()
+
+## Faces the character left/right. Sprite characters flip the AnimatedSprite2D locally;
+## flipping the whole body via scale.x is unstable (Godot re-decomposes a negative scale on
+## a physics body into a rotation, which makes an asymmetric sprite spaz and stick). The
+## procedural polygon is symmetric, so it keeps the original body-scale flip.
+func _apply_facing(facing: float) -> void:
+	if _uses_sprite_frames:
+		animated_sprite.flip_h = facing < 0.0
+	else:
+		scale.x = facing
 
 func take_damage_from(attack_data: AttackData, attacker: CharacterBase) -> void:
 	GameState.combat_resolver.resolve_hit(self, attack_data, attacker)
