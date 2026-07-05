@@ -19,3 +19,4 @@ res://scripts/upgrades/effects/GlassCannonEffect.gd
 res://scripts/upgrades/effects/HaymakerEffect.gd
 res://scripts/upgrades/effects/MomentumEffect.gd
 res://scripts/characters/CharacterBase.gd
+res://scripts/combat/CombatResolver.gd

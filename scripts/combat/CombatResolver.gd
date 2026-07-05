@@ -5,7 +5,7 @@ const BASE_GRAVITY: float = 980.0
 const RAGE_SCALE: float = 0.5
 
 func resolve_hit(target: CharacterBase, attack_data: AttackData, attacker: CharacterBase) -> void:
-	if not multiplayer.is_server():
+	if not NetworkManager.is_host():
 		return
 
 	var rage_bonus: float = 1.0 + (1.0 - (target.current_hp / target.stats.max_hp)) * RAGE_SCALE
