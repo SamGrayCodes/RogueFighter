@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://br82mtkr1yqa2" path="res://resources/sprites/knight/Jump.png" id="4_6udvj"]
 [ext_resource type="Texture2D" uid="uid://dsn3gekqnlsby" path="res://resources/sprites/knight/Fall.png" id="5_4ig0e"]
 [ext_resource type="Texture2D" uid="uid://r4435a02ugh7" path="res://resources/sprites/knight/Attack1.png" id="6_sxsf2"]
+[ext_resource type="Texture2D" uid="uid://cnynld8aglheu" path="res://resources/sprites/knight/Attack2.png" id="7_jxcr5"]
 [ext_resource type="Texture2D" uid="uid://c45tmlpttllkf" path="res://resources/sprites/knight/Take Hit.png" id="7_uuhyh"]
 
 [sub_resource type="Resource" id="Resource_2w1l1"]
@@ -43,7 +44,7 @@ loop = false
 [sub_resource type="Resource" id="Resource_6udvj"]
 script = ExtResource("1_07v0f")
 action = &"air_attack"
-sheet = ExtResource("7_uuhyh")
+sheet = ExtResource("7_jxcr5")
 fps = 14.0
 loop = false
 
