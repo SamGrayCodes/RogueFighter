@@ -72,7 +72,7 @@ func _setup_configured_local() -> void:
 func _setup_networked() -> void:
 	_clear_preplaced_characters()
 	_rules_editor.hide()
-	if not multiplayer.is_server():
+	if not _is_sim_authority():
 		return
 	_active_mode = GameState.get_mode_for_id(&"no_upgrades")
 	GameState.active_mode = _active_mode
@@ -249,4 +249,4 @@ func _update_camera() -> void:
 		_camera.global_position.y = clampf(_camera.global_position.y, bounds.position.y, bounds.end.y)
 
 func _is_sim_authority() -> bool:
-	return not multiplayer.has_multiplayer_peer() or multiplayer.is_server()
+	return NetworkManager.is_host()

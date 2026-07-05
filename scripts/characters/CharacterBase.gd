@@ -140,7 +140,7 @@ func _receive_input(move_axis: float, jump_held: bool, attack_held: bool) -> voi
 	_input.attack_held = attack_held
 
 func _is_sim_authority() -> bool:
-	return not multiplayer.has_multiplayer_peer() or multiplayer.is_server()
+	return NetworkManager.is_host()
 
 func _is_input_owner() -> bool:
 	if not multiplayer.has_multiplayer_peer():
