@@ -237,6 +237,18 @@ func _apply_facing(facing: float) -> void:
 	else:
 		scale.x = facing
 
+## Current horizontal facing: 1.0 = right (sprite's native orientation), -1.0 = left.
+func get_facing() -> float:
+	return _facing
+
+## Forces a horizontal facing and applies it to the sprite right away. A zero direction is
+## ignored so callers can pass raw move input without clobbering the current facing.
+func set_facing(direction: float) -> void:
+	if direction == 0.0:
+		return
+	_facing = sign(direction)
+	_apply_facing(_facing)
+
 ## Plays a one-shot hit flash on the sprite: snaps to full flash then fades back over
 ## hit_flash_duration. No-op for procedural (polygon) characters, which already tint via
 ## their hit animation's modulate track.
